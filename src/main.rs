@@ -9,24 +9,29 @@ use converters::inches_to_centimeters;
 use converters::miles_to_kilometers;
 
 fn main() {
-    let mut option = 0;
+    let conversions = vec![
+        ("Meters to Kilometers", meters_to_kilometers::convert as fn(f64) -> f64),
+        ("Pounds to Kilograms", pounds_to_kilograms::convert as fn(f64) -> f64),
+        ("Inches to Centimeters", inches_to_centimeters::convert as fn(f64) -> f64),
+        ("Miles to Kilometers", miles_to_kilometers::convert as fn(f64) -> f64)
+    ];
+
+    let mut option = 0usize;
 
     while option == 0 {
         println!("{}", "Select a conversion:".blue().bold());
-        println!("1️: Meters to Kilometers");
-        println!("2️: Pounds to Kilograms");
-        println!("3️: Inches to Centimeters");
-        println!("4️: Miles to Kilometers");
+        for (i, (name, _)) in conversions.iter().enumerate() {
+            println!("{}: {}", i + 1, name);
+        }
 
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("Failed to read input");
 
-        match input.trim().parse::<u32>() {
-            Ok(num) if num >= 1 && num <= 4 => {
+        match input.trim().parse::<usize>() {
+            Ok(num) if num >= 1 && num <= conversions.len() => {
                 option = num;
             }
-            Ok(_) => println!("{}", "Please select a valid option from the list.".red()),
-            Err(_) => println!("{}", "Please enter a number.".red()),
+            _ => println!("{}", "Please select a valid option from the list.".red()),
         }
     }
 
@@ -41,27 +46,8 @@ fn main() {
         }
     };
 
-    match option {
-        1 =>
-            println!(
-                "Result: {:.2} kilometers",
-                meters_to_kilometers::convert(number).to_string().green()
-            ),
-        2 =>
-            println!(
-                "Result: {:.2} kilograms",
-                pounds_to_kilograms::convert(number).to_string().green()
-            ),
-        3 =>
-            println!(
-                "Result: {:.2} centimeters",
-                inches_to_centimeters::convert(number).to_string().green()
-            ),
-        4 =>
-            println!(
-                "Result: {:.2} kilometers",
-                miles_to_kilometers::convert(number).to_string().green()
-            ),
-        _ => unreachable!(),
-    }
+    let conversion = conversions[option - 1].1;
+    let result = conversion(number);
+
+    println!("{} {:.2} {} {:.2}", "Result:".green().bold(), number, "=>".yellow().bold(), result);
 }
