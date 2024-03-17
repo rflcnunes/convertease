@@ -6,6 +6,7 @@ mod converters;
 use converters::meters_to_kilometers;
 use converters::pounds_to_kilograms;
 use converters::inches_to_centimeters;
+use converters::miles_to_kilometers;
 
 fn main() {
     let mut option = 0;
@@ -15,12 +16,13 @@ fn main() {
         println!("1️: Meters to Kilometers");
         println!("2️: Pounds to Kilograms");
         println!("3️: Inches to Centimeters");
+        println!("4️: Miles to Kilometers");
 
         let mut input = String::new();
         io::stdin().read_line(&mut input).expect("Failed to read input");
 
         match input.trim().parse::<u32>() {
-            Ok(num) if num >= 1 && num <= 3 => {
+            Ok(num) if num >= 1 && num <= 4 => {
                 option = num;
             }
             Ok(_) => println!("{}", "Please select a valid option from the list.".red()),
@@ -54,6 +56,11 @@ fn main() {
             println!(
                 "Result: {:.2} centimeters",
                 inches_to_centimeters::convert(number).to_string().green()
+            ),
+        4 =>
+            println!(
+                "Result: {:.2} kilometers",
+                miles_to_kilometers::convert(number).to_string().green()
             ),
         _ => unreachable!(),
     }
